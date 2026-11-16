@@ -1,0 +1,26 @@
+# Line endings. See docs/PLAN.md P0-02.
+# Power BI Desktop writes PBIP files with CRLF line endings, and edited
+# PBIP files must be UTF-8 without BOM (docs/LEARN-SOURCES.md S02).
+# Git cannot enforce "no BOM"; CC checks it after each edit (R22).
+
+* text=auto
+
+# PBIP / TMDL / PBIR text files: CRLF in the working tree, as Desktop writes them.
+*.tmdl   text eol=crlf
+*.pbir   text eol=crlf
+*.pbism  text eol=crlf
+*.pbip   text eol=crlf
+*.json   text eol=crlf
+*.dax    text eol=crlf
+*.pq     text eol=crlf
+
+# Docs and scripts
+*.md     text
+*.ps1    text eol=crlf
+
+# Binary files: never diff or convert
+*.png    binary
+*.jpg    binary
+*.pdf    binary
+*.pbix   binary
+*.abf    binary

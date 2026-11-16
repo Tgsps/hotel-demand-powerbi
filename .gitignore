@@ -1,0 +1,36 @@
+# hotel-demand-powerbi: files that must never be committed.
+# See docs/PLAN.md P0-02 and docs/RISKS-AND-OPEN-QUESTIONS.md R01, R03, R04.
+
+# ---------------------------------------------------------------
+# Data. The dataset is never committed. Keep it in data/raw/.
+# data/lookup/ stays tracked for small hand-written lookups (P1-15).
+# ---------------------------------------------------------------
+data/*
+!data/lookup/
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.zip
+
+# ---------------------------------------------------------------
+# Power BI. The project is kept as PBIP text; a PBIX holds data.
+# The two .pbi patterns are the ones Desktop writes into its own
+# .gitignore (docs/LEARN-SOURCES.md S02). Desktop does not write
+# its own file when one already exists, so they must be here.
+# ---------------------------------------------------------------
+*.pbix
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+*.abf
+
+# ---------------------------------------------------------------
+# OS and editor clutter
+# ---------------------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store
+~$*
+*.tmp
+.vscode/
