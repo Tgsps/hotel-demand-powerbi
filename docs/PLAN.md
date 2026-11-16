@@ -29,7 +29,7 @@ Skills that need the Power BI Service are covered only if the owner gets Service
 
 1. The owner has about 6-8 hours a week. The week estimates depend on this (R11).
 2. Desktop is a recent build. Check it in Phase 0 (R05).
-3. Service access is unknown. The plan works with no Service. Phase 4b is optional.
+3. The owner has Power BI (free) under Microsoft Fabric (Free), with no Pro or PPU (R02). The target is Desktop + My workspace. P0-09 tests what that allows. Phase 4b is limited to what P0-09 confirms.
 4. Data files are never committed until the licence is verified, and probably not even then (R01, R03).
 
 ## Timeline
@@ -45,6 +45,17 @@ Skills that need the Power BI Service are covered only if the owner gets Service
 | 5 | Packaging for the CV | 0.5 week |
 | | **Total** | **about 6.5-8 weeks** |
 
+## Milestones
+
+Each milestone has to be usable on its own, even if the later phases never happen.
+
+| Milestone | After | Content | Release |
+|---|---|---|---|
+| M1 | Phase 2 | README with the model diagram and the measures list (name, business question, tested status). The PBIP project opens in Desktop after the data path parameter is set. | First release |
+| M2 | Phase 3 | Screenshots of the report pages, showing aggregates only, with attribution (R01). The README is updated with findings taken from the report. | Second release |
+
+Phases 4 and 5 add to M2 but are not needed for it.
+
 ---
 
 ## Phase 0: Setup, licence and access (0.5 week)
@@ -54,8 +65,8 @@ Skills that need the Power BI Service are covered only if the owner gets Service
 - A0.1 `git ls-files` lists no `.csv`, `.pbix`, `cache.abf` or `localSettings.json`.
 - A0.2 `.gitignore` excludes `data/`, `**/.pbi/localSettings.json` and `**/.pbi/cache.abf`. The last two are the patterns Desktop itself would write [verified: S02].
 - A0.3 `docs/DATA-SOURCE.md` records:
-  - the original source page,
-  - the licence or terms as found there (quoted at most briefly, with a link),
+  - the file provenance (the TidyTuesday copy),
+  - the outcome of the licence check at the original source (verified, or still unverified and why),
   - the file size,
   - the SHA-256 hash,
   - row count 119,390 and column count 32.
@@ -63,6 +74,7 @@ Skills that need the Power BI Service are covered only if the owner gets Service
 - A0.4 The Desktop version (month and year) and install type (Store or .exe) are recorded. The file also says whether the preview option "Detect and reload external PBIP changes" exists [verified: S05 names this option].
 - A0.5 The owner's decisions on R01 (licence) and R02 (Service) are written into RISKS-AND-OPEN-QUESTIONS.md.
 - A0.6 The local-path check script runs and passes on the repo.
+- A0.7 The P0-09 results are recorded in `docs/SERVICE-RUNBOOK.md`: publish, dashboard pin, subscription, scheduled refresh for a local CSV. Each one is marked "works", "does not work" or "not tried", with the date.
 
 ### Tasks
 
@@ -72,10 +84,11 @@ Skills that need the Power BI Service are covered only if the owner gets Service
 | P0-02 | Write `.gitignore` (data/, PBIP cache and local settings) and `.gitattributes`. Edited PBIP files must be UTF-8 without BOM, and Desktop writes CRLF [verified: S02]. Set `*.tmdl`, `*.pbir`, `*.pbism` and `*.json` to `text eol=crlf`. | CC |
 | P0-03 | Write `scripts/check-no-local-paths.ps1`. It fails if any tracked text file contains a drive-letter path, a user-profile folder name or an email-like string. | CC |
 | P0-04 | Write the `docs/DATA-SOURCE.md` template | CC |
-| P0-05 | Download the dataset from the original publisher's page (not a mirror). Read the licence or terms. Fill in DATA-SOURCE.md. Keep the file in `data/raw/` (ignored by git). | Owner |
+| P0-05 | Record the file provenance as the TidyTuesday copy. Try to verify the licence at the original source by another route. Record the outcome in DATA-SOURCE.md. Keep the file in `data/raw/` (ignored by git). | Owner |
 | P0-06 | Compute the hash (`Get-FileHash -Algorithm SHA256`) and the size. Record them. | Owner |
 | P0-07 | Record the Desktop version and preview options. Turn off auto date/time for new files (Options > Global > Data load) if the owner agrees [verified: S20 location]. | Owner |
 | P0-08 | Decide on R01, R02 and R04 | Owner |
+| P0-09 | Publish a test report from Desktop to My workspace with the Free licence. Record exactly what works and what does not: publish, dashboard pin, subscription, scheduled refresh for a local CSV. Until this is done, the 11 Service-only rows in the coverage table are labelled "Service-only [not verified for Free + My workspace]". | Owner |
 
 ---
 
@@ -218,7 +231,9 @@ Skills that need the Power BI Service are covered only if the owner gets Service
 
 Gateway reasoning for the runbook: the CSV sits on a local disk, so a scheduled refresh in the Service would need a gateway, because the Service cannot reach the file over the internet [inferred from S48]. Pro allows up to 8 scheduled refreshes a day [verified: S49].
 
-## Phase 4b: Service (optional, only if R02 resolves to "access")
+## Phase 4b: Service (optional, limited to what P0-09 confirms for Free + My workspace)
+
+With the owner's Free licence, tasks that need a shared workspace, an app or other users can only be done if a later licence change allows it (R02). Workspace roles, apps and item access, for example, need Pro or PPU [verified: S40, S46].
 
 ### Acceptance checks
 
@@ -269,7 +284,7 @@ The objective labels below are condensed paraphrases, numbered in the order of t
 Coverage values:
 - **Desktop** = done in Desktop by this project.
 - **Partial** = only part of the objective is done.
-- **Service** = needs Service access (Phase 4b). Without it, only the runbook covers it.
+- **Service-only** = needs the Service (Phase 4b). Otherwise only the runbook covers it. Labelled "[not verified for Free + My workspace]" until P0-09 records what the owner's Free licence allows.
 - **Not covered** = cannot be done, with the reason.
 
 ### 1 Prepare the data (25-30%)
@@ -354,20 +369,20 @@ Coverage values:
 
 | # | Objective (condensed) | Task(s) | Coverage |
 |---|---|---|---|
-| 4.1.1 | Create and configure a workspace | P4-05, P4b-01 | Service. Creating a workspace other than My workspace needs Pro or PPU [verified: S40]. |
-| 4.1.2 | Configure and update an app | P4-05, P4b-03 | Service. Free users cannot create apps [verified: S46]. |
-| 4.1.3 | Publish, import, update items | P4-05, P4b-02 | Service |
-| 4.1.4 | Dashboards | P4-05, P4b-04 | Service |
+| 4.1.1 | Create and configure a workspace | P4-05, P4b-01 | Service-only [not verified for Free + My workspace]. Creating a workspace other than My workspace needs Pro or PPU [verified: S40]. |
+| 4.1.2 | Configure and update an app | P4-05, P4b-03 | Service-only [not verified for Free + My workspace]. Free users cannot create apps [verified: S46]. |
+| 4.1.3 | Publish, import, update items | P4-05, P4b-02 | Service-only [not verified for Free + My workspace] |
+| 4.1.4 | Dashboards | P4-05, P4b-04 | Service-only [not verified for Free + My workspace] |
 | 4.1.5 | Choose a distribution method | P4-05 | Partial: a written comparison is possible without the Service |
-| 4.1.6 | Subscriptions and data alerts | P4-05, P4b-05 | Service |
-| 4.1.7 | Promote or certify content | P4-05, P4b-06 | Service (certification needs an admin-enabled setting [not verified]) |
+| 4.1.6 | Subscriptions and data alerts | P4-05, P4b-05 | Service-only [not verified for Free + My workspace] |
+| 4.1.7 | Promote or certify content | P4-05, P4b-06 | Service-only [not verified for Free + My workspace] (certification needs an admin-enabled setting [not verified]) |
 | 4.1.8 | When a gateway is required | P4-05 | Partial: written decision [inferred from S48] |
-| 4.1.9 | Scheduled refresh | P4-05, P4b-07 | Service, and needs a gateway or a cloud file location [inferred] |
-| 4.2.1 | Workspace roles | P4-05, P4b-01 | Service |
-| 4.2.2 | Item-level access | P4-05, P4b-08 | Service |
-| 4.2.3 | Access to semantic models | P4-05, P4b-08 | Service |
+| 4.1.9 | Scheduled refresh | P4-05, P4b-07 | Service-only [not verified for Free + My workspace], and needs a gateway or a cloud file location [inferred] |
+| 4.2.1 | Workspace roles | P4-05, P4b-01 | Service-only [not verified for Free + My workspace] |
+| 4.2.2 | Item-level access | P4-05, P4b-08 | Service-only [not verified for Free + My workspace] |
+| 4.2.3 | Access to semantic models | P4-05, P4b-08 | Service-only [not verified for Free + My workspace] |
 | 4.2.4 | RLS roles | P4-01 to P4-04 | Desktop |
-| 4.2.5 | RLS group membership | P4-05, P4b-09 | Service (members are assigned in the Service [verified: S33]) |
+| 4.2.5 | RLS group membership | P4-05, P4b-09 | Service-only [not verified for Free + My workspace] (members are assigned in the Service [verified: S33]) |
 | 4.2.6 | Sensitivity labels | P4-05 | Not covered: needs Purview / AIP P1 or P2 plus Pro or PPU and a tenant setting [verified: S44, S45]. Also, labels are not supported with PBIP [verified: S02]. Runbook text only. |
 
 ### Coverage summary
@@ -384,4 +399,4 @@ These counts come from the table above [inferred: counted by CC].
 
 - Partial in area 3: 3.1.10 and 3.2.11. 3.2.9 is counted as Desktop.
 - Not covered in area 3: 3.1.3, 3.1.7, 3.1.8, 3.2.13 and 3.3.6.
-- With Service access (Phase 4b), the 11 Service-only bullets and part of 4.1.8 and 4.1.5 become coverable.
+- No row changed category in the 2026-11-16 update, so the counts are unchanged. P0-09 decides how many of the 11 Service-only bullets are possible with Free + My workspace.

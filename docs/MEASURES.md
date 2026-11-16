@@ -8,7 +8,7 @@ All measures live in the `_Measures` table.
 
 - Ratios use DIVIDE with no alternate result. A zero or BLANK denominator then returns BLANK [verified: S30, S31], and visuals hide empty groups [verified: S31].
 - Boolean filters inside CALCULATE reference columns of one table only, and never a measure [verified: S25].
-- "Realized" means not cancelled (IsCanceled = 0). Whether IsCanceled = 1 also covers no-shows must be checked (DATA-QUALITY DQ-15).
+- "Realized" means not cancelled (IsCanceled = 0). IsCanceled = 1 also covers no-shows: confirmed, see DATA-QUALITY V-01.
 - Revenue is an **estimate**: AdrClean x TotalNights for bookings that were not cancelled. The definition of adr in the source paper must be checked [not verified].
 - Partial years: arrivals cover 2015-2017 [verified: planner brief], and the first and last years are probably incomplete [not verified]. Year-level comparisons across partial years are misleading. Show YoY at month level and let PY return BLANK where the prior month has no data.
 
