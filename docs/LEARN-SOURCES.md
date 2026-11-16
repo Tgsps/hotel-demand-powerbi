@@ -80,7 +80,38 @@ Status: planning document. Nothing here has been tested in Power BI Desktop.
 - Still unverified:
   - How a "NULL" text value behaves in a type conversion. It is implied to give an error, but not stated for this function.
   - Whether a parameter can hold the file path in the source step. No page gives an example.
-  - These functions were not fetched: Table.PromoteHeaders, Table.AddIndexColumn, Table.NestedJoin, Table.Group, Table.Unpivot, Table.Pivot, Table.Transpose, Json.Document, List.Dates, Date.FromText. Check each page before Phase 1.
+  - These functions are still not fetched: Table.NestedJoin, Table.Group, Table.Unpivot, Table.Pivot, Table.Transpose, Json.Document, List.Dates, Date.FromText. Check each page before the task that uses it. Table.PromoteHeaders and Table.AddIndexColumn were read on 2026-11-16 (S55, S56).
+
+#### M functions used by src/m (read 2026-11-16, FROM-PLANNER-04)
+
+| ID | Page | URL | Page date |
+|---|---|---|---|
+| S55 | Table.PromoteHeaders | https://learn.microsoft.com/en-us/powerquery-m/table-promoteheaders | 2026-03-24 |
+| S56 | Table.AddIndexColumn | https://learn.microsoft.com/en-us/powerquery-m/table-addindexcolumn | 2026-03-31 |
+| S57 | Table.TransformColumns | https://learn.microsoft.com/en-us/powerquery-m/table-transformcolumns | 2026-04-03 |
+| S58 | Text.Trim | https://learn.microsoft.com/en-us/powerquery-m/text-trim | 2026-04-03 |
+| S59 | List.PositionOf | https://learn.microsoft.com/en-us/powerquery-m/list-positionof | 2026-04-01 |
+| S60 | Table.RowCount | https://learn.microsoft.com/en-us/powerquery-m/table-rowcount | 2026-03-31 |
+| S61 | Table.FromRecords | https://learn.microsoft.com/en-us/powerquery-m/table-fromrecords | 2026-04-03 |
+| S62 | File.Contents | https://learn.microsoft.com/en-us/powerquery-m/file-contents | 2026-03-20 |
+| S63 | Text.From | https://learn.microsoft.com/en-us/powerquery-m/text-from | 2026-03-31 |
+
+- What they say:
+  - Table.PromoteHeaders takes an options record with PromoteAllScalars and Culture. By default only text and number values are promoted. PromoteAllScalars promotes every scalar value (S55).
+  - Table.AddIndexColumn takes (table, name, optional initialValue, optional increment, optional columnType). The defaults are 0 and 1 (S56).
+  - Table.TransformColumns takes {column, function} or {column, function, type}. A missing column is an error unless missingField says otherwise (S57).
+  - Text.Trim removes leading and trailing whitespace by default and accepts null (S58).
+  - List.PositionOf returns -1 when the value is not found (S59).
+  - Table.RowCount returns the number of rows (S60).
+  - Table.FromRecords turns a list of records into a table (S61).
+  - File.Contents returns the file as binary. Its options parameter is for internal use only (S62).
+  - Text.From returns null for null and accepts an optional culture (S63).
+- What the plan depends on: the draft queries in src/m (task P1-01, P1-06).
+- Still unverified:
+  - The `meta` form of a parameter query in Advanced Editor.
+  - Whether Table.ReplaceValue with a null oldValue replaces nulls.
+  - Whether File.Contents needs an absolute path; S62 does not say.
+  - Whether a parameter reference in the source step triggers Formula.Firewall (S37 describes the rule but not this case).
 
 ### Modelling and date tables
 

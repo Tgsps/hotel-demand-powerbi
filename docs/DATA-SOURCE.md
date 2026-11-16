@@ -51,6 +51,6 @@ To check a copy, compare its hash with the SHA-256 above, for example with `Get-
 |---|---|---|
 | Install type | .exe | [verified: owner, 2026-11-16] |
 | Version | October 2026, build 2.159.1231.0 (26.10) x64 | [verified: owner's Desktop feedback report 2026-11-16] |
-| Preview option "Detect and reload external PBIP changes" | Not seen in the report's preview lists. Owner to check in Options > Preview features (A0.4). | [not verified] |
+| Preview option "Detect and reload external PBIP changes" | exists and is enabled | [verified: owner, 2026-11-16] |
 
 Only the version is taken from the feedback report. No other field from it is recorded.

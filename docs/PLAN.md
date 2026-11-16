@@ -71,7 +71,7 @@ Phases 4 and 5 add to M2 but are not needed for it.
   - the SHA-256 hash,
   - row count 119,390 and column count 32.
   It contains no local path.
-- A0.4 The Desktop version (month and year) and install type (Store or .exe) are recorded. The file also says whether the preview option "Detect and reload external PBIP changes" exists [verified: S05 names this option].
+- A0.4 The Desktop version (month and year) and install type (Store or .exe) are recorded. The file also says whether the preview option "Detect and reload external PBIP changes" exists [verified: S05 names this option]. Recorded 2026-11-16: the option exists and is enabled [verified: owner, 2026-11-16]. The rule "CC edits TMDL only while Desktop is closed" stays until the reload behaviour is tested in Phase 1 (R05).
 - A0.5 The owner's decisions on R01 (licence) and R02 (Service) are written into RISKS-AND-OPEN-QUESTIONS.md.
 - A0.6 The local-path check script runs and passes on the repo.
 - A0.7 The P0-09 results are recorded in `docs/SERVICE-RUNBOOK.md` for exactly these items: 4.1.3 publish to My workspace, 4.1.4 dashboard and pin, 4.1.6 data alert on a tile (and whether subscriptions appear at all), 4.1.9 scheduled refresh for a local CSV, and 4.2.5. Each one is marked "works", "does not work", "blocked by a tenant setting" or "not tried", with the date.
@@ -84,9 +84,9 @@ Phases 4 and 5 add to M2 but are not needed for it.
 | ID | Task | Who |
 |---|---|---|
 | P0-02 | **First.** Write `.gitignore` (data/, PBIP cache and local settings) and `.gitattributes`. Edited PBIP files must be UTF-8 without BOM, and Desktop writes CRLF [verified: S02]. Set `*.tmdl`, `*.pbir`, `*.pbism` and `*.json` to `text eol=crlf`. Push only with owner approval, before any data file is in the clone. | CC, owner approves the push |
-| P0-01 | Write README.md skeleton: purpose, attribution with the wording in R01, licence status, how to open the project | CC |
-| P0-03 | Write `scripts/check-no-local-paths.ps1`. It fails if any tracked text file contains a drive-letter path, a user-profile folder name or an email-like string. | CC |
-| P0-04 | Write the `docs/DATA-SOURCE.md` template | CC |
+| P0-01 | Write README.md skeleton: purpose, attribution with the wording in R01, licence status, how to open the project<br>**Status: done 2026-11-16.** Planner wrote it; CC reviewed it against the honesty rules (FROM-PLANNER-04). | CC |
+| P0-03 | Write `scripts/check-no-local-paths.ps1`. It fails if any tracked text file contains a drive-letter path, a user-profile folder name or an email-like string.<br>**Status: done 2026-11-16.** Planner wrote it, and it also checks for byte-order marks. CC ran it in Windows PowerShell 5.1 and it passed; the patterns were tested on sample strings. It reads tracked files only, so new files must be staged first. | CC |
+| P0-04 | Write the `docs/DATA-SOURCE.md` template<br>**Status: done 2026-11-16.** Filled in, not just a template (FROM-PLANNER-03). | CC |
 | P0-05 | Record the file provenance as the TidyTuesday copy. The original article is identified. The article is published under CC BY 4.0, and the data files are supplied with it [verified: planner, source paper]. The file's licence is inferred from the article licence [inferred] (wording as in R01). Confirm the exact wording at the source and record the outcome in DATA-SOURCE.md. Keep the file in `data/` (ignored by git), and only after P0-02 is on origin/main. | Owner |
 | P0-06 | Compute the hash (`Get-FileHash -Algorithm SHA256`) and the size. Record them. | Owner |
 | P0-07 | Record the Desktop version and preview options. Turn off auto date/time for new files (Options > Global > Data load) if the owner agrees [verified: S20 location]. | Owner |
