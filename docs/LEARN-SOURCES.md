@@ -252,4 +252,5 @@ Label `[verified: planner, source paper]` means verified by the planner from the
   - Meal "Undefined" and "SC" both mean no meal package.
   - lead_time is the number of days between entering the booking in the PMS and arrival.
   - reservation_status_date is the date the last status was set.
+  - adr is the sum of all lodging transactions divided by the total number of nights stayed (added 2026-11-16, FROM-PLANNER-03).
 - The owner's file is the merged TidyTuesday copy, not the original files (R14).

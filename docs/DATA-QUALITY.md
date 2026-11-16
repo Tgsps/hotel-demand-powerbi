@@ -73,10 +73,10 @@ Column names used below are those of the published file as CC remembers them. Ch
 - Effect to verify: rows unchanged. Null count = 112,593. Errors = 0. CompanyLabel "Not applicable" = 112,593.
 - Model note: about 94% of the column is empty (112,593 / 119,390) [inferred: arithmetic]. Company stays a degenerate attribute in the fact table. It is not a dimension (see DATA-MODEL.md).
 
-### DQ-03 Empty country
+### DQ-03 Country holds "NULL"
 
-- Observed: 488 rows with an empty country [verified: planner brief].
-- Uncertain: whether the raw file holds an empty string or the text "NULL" for these rows. The brief says "empty" [not verified which one]. The rule handles both.
+- Observed: 488 rows have no country [verified: planner brief].
+- Resolved: these 488 rows hold the text "NULL", not an empty string [verified: planner, direct read 2026-11-16]. The rule below still handles empty strings and nulls as well, in case another copy of the file differs.
 - Rule:
   ```
   CountryFixed = Table.ReplaceValue(Prev, each [country], each if [country] = null or [country] = "" or [country] = "NULL" then "UNK" else [country], Replacer.ReplaceValue, {"country"})

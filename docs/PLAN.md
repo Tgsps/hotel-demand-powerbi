@@ -87,7 +87,7 @@ Phases 4 and 5 add to M2 but are not needed for it.
 | P0-01 | Write README.md skeleton: purpose, attribution with the wording in R01, licence status, how to open the project | CC |
 | P0-03 | Write `scripts/check-no-local-paths.ps1`. It fails if any tracked text file contains a drive-letter path, a user-profile folder name or an email-like string. | CC |
 | P0-04 | Write the `docs/DATA-SOURCE.md` template | CC |
-| P0-05 | Record the file provenance as the TidyTuesday copy. The original article and its licence (CC BY 4.0) are identified [verified: planner, source paper]. Confirm the exact wording at the source and record the outcome in DATA-SOURCE.md. Keep the file in `data/raw/` (ignored by git), and only after P0-02 is on origin/main. | Owner |
+| P0-05 | Record the file provenance as the TidyTuesday copy. The original article is identified. The article is published under CC BY 4.0, and the data files are supplied with it [verified: planner, source paper]. The file's licence is inferred from the article licence [inferred] (wording as in R01). Confirm the exact wording at the source and record the outcome in DATA-SOURCE.md. Keep the file in `data/` (ignored by git), and only after P0-02 is on origin/main. | Owner |
 | P0-06 | Compute the hash (`Get-FileHash -Algorithm SHA256`) and the size. Record them. | Owner |
 | P0-07 | Record the Desktop version and preview options. Turn off auto date/time for new files (Options > Global > Data load) if the owner agrees [verified: S20 location]. | Owner |
 | P0-08 | Decide on R01, R02 and R04 | Owner |
@@ -101,7 +101,7 @@ Phases 4 and 5 add to M2 but are not needed for it.
 
 - A1.1 FactBooking has 119,390 rows after all steps. No step removes rows (DATA-QUALITY principle 1).
 - A1.2 "Keep errors" returns 0 rows on every loaded query.
-- A1.3 Agent nulls = 16,340. Company nulls = 112,593. Country `UNK` = 488. IsAdrNegative = 1. IsAdrZero = 1,959. All per [verified: planner brief].
+- A1.3 Agent nulls = 16,340. Company nulls = 112,593. Country `UNK` = 488; the source holds the text "NULL" in these rows [verified: planner, direct read 2026-11-16]. IsAdrNegative = 1. IsAdrZero = 1,959. All per [verified: planner brief].
 - A1.4 City Hotel = 79,330 and Resort Hotel = 40,060. Cancellation rate rounds to 37.0%.
 - A1.5 'Date' covers whole calendar years with no gaps. It can be marked as a date table without a validation error [verified: S19 lists the validation].
 - A1.6 Only these tables load: FactBooking, Hotel, Date, the small dimensions, and AggBookingsMonth if used. Staging, practice and lookup queries have load disabled.

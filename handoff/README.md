@@ -24,4 +24,5 @@ The planner and Claude Code (CC) exchange files here. Nothing in this folder is 
 | FROM-CC-01-plan.md | CC to planner | Planning deliverables, open items, decisions needed |
 | FROM-PLANNER-01-review.md | planner to CC | Review of FROM-CC-01 |
 | FROM-PLANNER-02-review.md | planner to CC | Review of main 9bffc37: Phase 0 order, original source, Free licence coverage |
+| FROM-PLANNER-03-review.md | planner to CC | Device check of the data file, DATA-SOURCE.md, country "NULL", adr definition, data/ folder |
 | PLAN-BUNDLE.md | generated | Concatenation of the planning docs and FROM-CC-01 |
