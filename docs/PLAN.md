@@ -74,21 +74,24 @@ Phases 4 and 5 add to M2 but are not needed for it.
 - A0.4 The Desktop version (month and year) and install type (Store or .exe) are recorded. The file also says whether the preview option "Detect and reload external PBIP changes" exists [verified: S05 names this option].
 - A0.5 The owner's decisions on R01 (licence) and R02 (Service) are written into RISKS-AND-OPEN-QUESTIONS.md.
 - A0.6 The local-path check script runs and passes on the repo.
-- A0.7 The P0-09 results are recorded in `docs/SERVICE-RUNBOOK.md`: publish, dashboard pin, subscription, scheduled refresh for a local CSV. Each one is marked "works", "does not work" or "not tried", with the date.
+- A0.7 The P0-09 results are recorded in `docs/SERVICE-RUNBOOK.md` for exactly these items: 4.1.3 publish to My workspace, 4.1.4 dashboard and pin, 4.1.6 data alert on a tile (and whether subscriptions appear at all), 4.1.9 scheduled refresh for a local CSV, and 4.2.5. Each one is marked "works", "does not work", "blocked by a tenant setting" or "not tried", with the date.
+- A0.8 `.gitignore` is on origin/main before any data file is placed inside the clone. `git log origin/main -- .gitignore` shows a commit dated before the first use of `data/`.
 
 ### Tasks
 
+**Order:** P0-02 comes first. It is committed and pushed (with owner approval) before the owner places any data file inside the clone. The other tasks follow in ID order.
+
 | ID | Task | Who |
 |---|---|---|
-| P0-01 | Write README.md skeleton: purpose, attribution placeholder, licence status "unverified", how to open the project | CC |
-| P0-02 | Write `.gitignore` (data/, PBIP cache and local settings) and `.gitattributes`. Edited PBIP files must be UTF-8 without BOM, and Desktop writes CRLF [verified: S02]. Set `*.tmdl`, `*.pbir`, `*.pbism` and `*.json` to `text eol=crlf`. | CC |
+| P0-02 | **First.** Write `.gitignore` (data/, PBIP cache and local settings) and `.gitattributes`. Edited PBIP files must be UTF-8 without BOM, and Desktop writes CRLF [verified: S02]. Set `*.tmdl`, `*.pbir`, `*.pbism` and `*.json` to `text eol=crlf`. Push only with owner approval, before any data file is in the clone. | CC, owner approves the push |
+| P0-01 | Write README.md skeleton: purpose, attribution with the wording in R01, licence status, how to open the project | CC |
 | P0-03 | Write `scripts/check-no-local-paths.ps1`. It fails if any tracked text file contains a drive-letter path, a user-profile folder name or an email-like string. | CC |
 | P0-04 | Write the `docs/DATA-SOURCE.md` template | CC |
-| P0-05 | Record the file provenance as the TidyTuesday copy. Try to verify the licence at the original source by another route. Record the outcome in DATA-SOURCE.md. Keep the file in `data/raw/` (ignored by git). | Owner |
+| P0-05 | Record the file provenance as the TidyTuesday copy. The original article and its licence (CC BY 4.0) are identified [verified: planner, source paper]. Confirm the exact wording at the source and record the outcome in DATA-SOURCE.md. Keep the file in `data/raw/` (ignored by git), and only after P0-02 is on origin/main. | Owner |
 | P0-06 | Compute the hash (`Get-FileHash -Algorithm SHA256`) and the size. Record them. | Owner |
 | P0-07 | Record the Desktop version and preview options. Turn off auto date/time for new files (Options > Global > Data load) if the owner agrees [verified: S20 location]. | Owner |
 | P0-08 | Decide on R01, R02 and R04 | Owner |
-| P0-09 | Publish a test report from Desktop to My workspace with the Free licence. Record exactly what works and what does not: publish, dashboard pin, subscription, scheduled refresh for a local CSV. Until this is done, the 11 Service-only rows in the coverage table are labelled "Service-only [not verified for Free + My workspace]". | Owner |
+| P0-09 | Publish a test report from Desktop to My workspace with the Free licence. Test only these and record exactly what works and what does not:<br>- 4.1.3 publish to My workspace<br>- 4.1.4 create a dashboard and pin<br>- 4.1.6 a data alert on a tile; subscriptions need qualifying capacity [verified: S46], so this row is at most Partial<br>- 4.1.9 scheduled refresh; a local CSV needs a gateway [inferred: S48]<br>- 4.2.5 RLS membership [not verified]<br>Record any block caused by a tenant admin setting [verified: S46 says settings can disable features]. Until this is done, those 5 rows are labelled "Service-only [pending P0-09]". | Owner |
 
 ---
 
@@ -125,7 +128,7 @@ Phases 4 and 5 add to M2 but are not needed for it.
 | P1-13 | Group By query AggBookingsMonth | CC | 1.3.3 |
 | P1-14 | Practice queries (load disabled): unpivot WeekendNights/WeekNights into NightType; a monthly pivot by hotel; a transpose of a small summary. Function pages still to be read (LEARN-SOURCES gaps). | CC | 1.3.4 |
 | P1-15 | `data/lookup/meal.json`, a small JSON lookup of meal codes. The descriptions must be taken from the dataset paper, and the owner verifies them. Parse it with Json.Document, turn it into a table, and merge it into the Meal dimension. | CC writes after the owner confirms the descriptions | 1.3.5, 1.3.8 |
-| P1-16 | Append. If the original publisher gives two files (one per hotel) [not verified], load both and append them. Otherwise, append a practice split. Owner decision R14. | CC / Owner | 1.3.8 |
+| P1-16 | Append. The original article provides two datasets (H1 Resort, H2 City, 31 variables each) [verified: planner, source paper]. If the owner obtains them, load both and append them for real. Otherwise, append a practice split of the merged file. Owner decision R14 (pending). | CC / Owner | 1.3.8 |
 | P1-17 | 'Date' query in Power Query, with the range computed from the fact dates (DATA-MODEL.md) | CC | 2.1.4 |
 | P1-18 | Save as PBIP (TMDL). Commit after the local-path check. | Owner | (enabler) |
 
@@ -237,8 +240,8 @@ With the owner's Free licence, tasks that need a shared workspace, an app or oth
 
 ### Acceptance checks
 
-- A4b.1 The report is published to a workspace, not to My workspace, if the licence allows it (Pro or PPU needed [verified: S40]).
-- A4b.2 RLS members are assigned on the semantic model Security page and tested with "Test as role" [verified: S33].
+- A4b.1 The report is published to My workspace (Free licence). Publishing to any other workspace needs Pro or PPU [verified: S40, S54].
+- A4b.2 Only if P0-09 shows that 4.2.5 is possible: RLS members are assigned on the semantic model Security page and tested with "Test as role" [verified: S33].
 - A4b.3 Screenshots of each step taken. The runbook marks each step "done in Service" with the date.
 - A4b.4 Publish to web is **not** used unless the owner decides it and the licence is verified. It makes the report public [verified: S42].
 
@@ -246,15 +249,15 @@ With the owner's Free licence, tasks that need a shared workspace, an app or oth
 
 | ID | Task | PL-300 |
 |---|---|---|
-| P4b-01 | Create a workspace and assign roles (using test accounts in a trial tenant only) | 4.1.1, 4.2.1 |
-| P4b-02 | Publish from Desktop. Update it once. | 4.1.3 |
-| P4b-03 | Create an app and update it | 4.1.2 |
-| P4b-04 | Pin visuals to a dashboard | 4.1.4 |
-| P4b-05 | Subscriptions and one data alert on a dashboard tile | 4.1.6 |
-| P4b-06 | Endorse (promote) the semantic model | 4.1.7 |
-| P4b-07 | Gateway decision, and scheduled refresh if a gateway or cloud storage is set up | 4.1.8, 4.1.9 |
-| P4b-08 | Item-level access and semantic model access (Build permission) | 4.2.2, 4.2.3 |
-| P4b-09 | RLS role membership with a security group | 4.2.5 |
+| P4b-01 | Dropped with Free: creating a workspace and assigning roles is not possible [verified: S46]. Runbook text only. | 4.1.1, 4.2.1 |
+| P4b-02 | Publish from Desktop to My workspace. Update it once. | 4.1.3 |
+| P4b-03 | Dropped with Free: a free user cannot create an app [verified: S46]. Runbook text only. | 4.1.2 |
+| P4b-04 | Create a dashboard in My workspace and pin visuals | 4.1.4 |
+| P4b-05 | One data alert on a dashboard tile. Record whether subscriptions are offered at all; they are listed only on qualifying capacity [verified: S46]. | 4.1.6 |
+| P4b-06 | Dropped with Free: a free user cannot add endorsements [verified: S46]. Runbook text only. | 4.1.7 |
+| P4b-07 | Gateway decision, and scheduled refresh if a gateway or cloud storage is set up. Schedule refresh is listed for My workspace [verified: S46]. A local CSV needs a gateway [inferred: S48]. | 4.1.8, 4.1.9 |
+| P4b-08 | Dropped with Free: sharing and managing permissions are not possible [verified: S46]. Runbook text only. | 4.2.2, 4.2.3 |
+| P4b-09 | RLS role membership, only if P0-09 shows it is possible [not verified] | 4.2.5 |
 
 ---
 
@@ -284,7 +287,8 @@ The objective labels below are condensed paraphrases, numbered in the order of t
 Coverage values:
 - **Desktop** = done in Desktop by this project.
 - **Partial** = only part of the objective is done.
-- **Service-only** = needs the Service (Phase 4b). Otherwise only the runbook covers it. Labelled "[not verified for Free + My workspace]" until P0-09 records what the owner's Free licence allows.
+- **Service-only [pending P0-09]** = needs the Service, and may be possible in My workspace with the Free licence. P0-09 tests it.
+- **Not covered (Free)** = needs Pro or PPU, which the owner does not have (R02). Runbook text only.
 - **Not covered** = cannot be done, with the reason.
 
 ### 1 Prepare the data (25-30%)
@@ -369,20 +373,20 @@ Coverage values:
 
 | # | Objective (condensed) | Task(s) | Coverage |
 |---|---|---|---|
-| 4.1.1 | Create and configure a workspace | P4-05, P4b-01 | Service-only [not verified for Free + My workspace]. Creating a workspace other than My workspace needs Pro or PPU [verified: S40]. |
-| 4.1.2 | Configure and update an app | P4-05, P4b-03 | Service-only [not verified for Free + My workspace]. Free users cannot create apps [verified: S46]. |
-| 4.1.3 | Publish, import, update items | P4-05, P4b-02 | Service-only [not verified for Free + My workspace] |
-| 4.1.4 | Dashboards | P4-05, P4b-04 | Service-only [not verified for Free + My workspace] |
+| 4.1.1 | Create and configure a workspace | P4-05, P4b-01 | Not covered (Free): a free user cannot create, edit or delete a workspace [verified: S46]. Runbook text only. |
+| 4.1.2 | Configure and update an app | P4-05, P4b-03 | Not covered (Free): a free user cannot create an app [verified: S46]. Runbook text only. |
+| 4.1.3 | Publish, import, update items | P4-05, P4b-02 | Service-only [pending P0-09]: publish to My workspace |
+| 4.1.4 | Dashboards | P4-05, P4b-04 | Service-only [pending P0-09]: create a dashboard and pin, listed for My workspace [verified: S46] |
 | 4.1.5 | Choose a distribution method | P4-05 | Partial: a written comparison is possible without the Service |
-| 4.1.6 | Subscriptions and data alerts | P4-05, P4b-05 | Service-only [not verified for Free + My workspace] |
-| 4.1.7 | Promote or certify content | P4-05, P4b-06 | Service-only [not verified for Free + My workspace] (certification needs an admin-enabled setting [not verified]) |
+| 4.1.6 | Subscriptions and data alerts | P4-05, P4b-05 | Service-only [pending P0-09]: data alert on a tile. At most Partial, because subscriptions are listed only on qualifying capacity [verified: S46]. |
+| 4.1.7 | Promote or certify content | P4-05, P4b-06 | Not covered (Free): a free user cannot add endorsements [verified: S46]. Runbook text only. |
 | 4.1.8 | When a gateway is required | P4-05 | Partial: written decision [inferred from S48] |
-| 4.1.9 | Scheduled refresh | P4-05, P4b-07 | Service-only [not verified for Free + My workspace], and needs a gateway or a cloud file location [inferred] |
-| 4.2.1 | Workspace roles | P4-05, P4b-01 | Service-only [not verified for Free + My workspace] |
-| 4.2.2 | Item-level access | P4-05, P4b-08 | Service-only [not verified for Free + My workspace] |
-| 4.2.3 | Access to semantic models | P4-05, P4b-08 | Service-only [not verified for Free + My workspace] |
+| 4.1.9 | Scheduled refresh | P4-05, P4b-07 | Service-only [pending P0-09]: schedule refresh is listed for My workspace [verified: S46]. A local CSV needs a gateway [inferred: S48]. |
+| 4.2.1 | Workspace roles | P4-05, P4b-01 | Not covered (Free): no workspace other than My workspace, and roles other than Viewer need Pro or PPU [verified: S46]. Runbook text only. |
+| 4.2.2 | Item-level access | P4-05, P4b-08 | Not covered (Free): a free user cannot share or manage permissions [verified: S46, S54]. Runbook text only. |
+| 4.2.3 | Access to semantic models | P4-05, P4b-08 | Not covered (Free): a free user cannot share a semantic model or manage permissions [verified: S46]. Runbook text only. |
 | 4.2.4 | RLS roles | P4-01 to P4-04 | Desktop |
-| 4.2.5 | RLS group membership | P4-05, P4b-09 | Service-only [not verified for Free + My workspace] (members are assigned in the Service [verified: S33]) |
+| 4.2.5 | RLS group membership | P4-05, P4b-09 | Service-only [pending P0-09] [not verified for Free]. Members are assigned in the Service [verified: S33]. |
 | 4.2.6 | Sensitivity labels | P4-05 | Not covered: needs Purview / AIP P1 or P2 plus Pro or PPU and a tenant setting [verified: S44, S45]. Also, labels are not supported with PBIP [verified: S02]. Runbook text only. |
 
 ### Coverage summary
@@ -394,9 +398,11 @@ These counts come from the table above [inferred: counted by CC].
 | 1 Prepare | 17 | 15 | 2 | 0 | 0 |
 | 2 Model | 16 | 16 | 0 | 0 | 0 |
 | 3 Visualize | 30 | 23 | 2 | 0 | 5 |
-| 4 Manage | 15 | 1 | 2 | 11 | 1 |
-| **Total** | **78** | **55** | **6** | **11** | **6** |
+| 4 Manage | 15 | 1 | 2 | 5 | 7 |
+| **Total** | **78** | **55** | **6** | **5** | **12** |
 
 - Partial in area 3: 3.1.10 and 3.2.11. 3.2.9 is counted as Desktop.
 - Not covered in area 3: 3.1.3, 3.1.7, 3.1.8, 3.2.13 and 3.3.6.
-- No row changed category in the 2026-11-16 update, so the counts are unchanged. P0-09 decides how many of the 11 Service-only bullets are possible with Free + My workspace.
+- Not covered in area 4: 4.1.1, 4.1.2, 4.1.7, 4.2.1, 4.2.2 and 4.2.3, because of the Free licence [verified: S46, S54]. 4.2.6 is not covered because of labels licensing and PBIP.
+- Service-only in area 4 (pending P0-09): 4.1.3, 4.1.4, 4.1.6 (at most Partial), 4.1.9 and 4.2.5.
+- Recounted on 2026-11-16 after FROM-PLANNER-02. Previous totals were 55 / 6 / 11 / 6.

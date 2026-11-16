@@ -4,6 +4,13 @@ Status: plan only. CC has not opened the dataset. Every "expected" number below 
 
 Labels: `[verified: planner brief]` means the number comes from the planner's brief of 2026-11-16 and CC did not re-check it. `Sxx` IDs refer to docs/LEARN-SOURCES.md.
 
+## Original source (added 2026-11-16)
+
+These facts are [verified: planner, source paper]; see LEARN-SOURCES "Dataset source".
+- The article publishes two datasets: H1 Resort Hotel (40,060 rows) and H2 City Hotel (79,330 rows), with 31 variables each.
+- Arrivals run from 1 July 2015 to 31 August 2017. This matches V-06.
+- The owner's file is the merged TidyTuesday copy with 32 columns. The extra column is probably `hotel`, added when the two files were merged [inferred]. Whether the merged copy otherwise equals the original files is [not verified] (R14).
+
 ## Baseline (from the brief)
 
 | Item | Value | Label |
@@ -49,20 +56,21 @@ Column names used below are those of the published file as CC remembers them. Ch
 ### DQ-01 "NULL" text in agent
 
 - Observed: 16,340 rows hold the text "NULL" [verified: planner brief].
-- Meaning: probably "no travel agent" [not verified; check the dataset paper].
+- Meaning: "NULL" means "not applicable", not missing [verified: planner, source paper].
 - Rule (Power Query):
   ```
   ReplacedAgent = Table.ReplaceValue(Promoted, "NULL", null, Replacer.ReplaceValue, {"agent"})
   ```
   `Replacer.ReplaceValue` matches whole values only, so an agent ID that merely contains "NULL" is not touched [verified: S09].
-  Then convert to `Int64.Type` with culture "en-US". Add `HasAgent = [agent] <> null` (logical).
-- Effect to verify: row count unchanged (119,390). Null count in agent = 16,340. Conversion errors in agent = 0. HasAgent false = 16,340.
+  Then convert to `Int64.Type` with culture "en-US". The null is kept so the column can be typed. Add `HasAgent = [agent] <> null` (logical). Add a text label column for display: `AgentLabel = if [agent] = null then "Not applicable" else Text.From([agent])`.
+- Effect to verify: row count unchanged (119,390). Null count in agent = 16,340. Conversion errors in agent = 0. HasAgent false = 16,340. AgentLabel "Not applicable" = 16,340.
 
 ### DQ-02 "NULL" text in company
 
 - Observed: 112,593 rows hold "NULL" [verified: planner brief].
-- Rule: same as DQ-01 on {"company"}. Add `HasCompany`.
-- Effect to verify: rows unchanged. Null count = 112,593. Errors = 0.
+- Meaning: "not applicable", not missing [verified: planner, source paper].
+- Rule: same as DQ-01 on {"company"}. Keep the null for typing. Add `HasCompany` and `CompanyLabel` ("Not applicable" when null).
+- Effect to verify: rows unchanged. Null count = 112,593. Errors = 0. CompanyLabel "Not applicable" = 112,593.
 - Model note: about 94% of the column is empty (112,593 / 119,390) [inferred: arithmetic]. Company stays a degenerate attribute in the fact table. It is not a dimension (see DATA-MODEL.md).
 
 ### DQ-03 Empty country
@@ -108,9 +116,9 @@ CC remembers these from public discussions of this dataset. Each one is a check,
 | ID | Check | Proposed rule if confirmed | Effect to verify |
 |---|---|---|---|
 | DQ-07 | children holds "NA" text. **Confirmed: 4 rows** [verified: data profile 2026-11-16, planner]. | Replace "NA" with null before the type change. TotalGuests treats null children as 0. | errors = 0 in children; null children = 4 |
-| DQ-08 | Bookings with adults + children + babies = 0. **Confirmed: 180** [verified: data profile 2026-11-16, planner]. | Flag `IsZeroGuest`. Do not delete. Measures that use guests exclude them. | IsZeroGuest = 180 (computed after DQ-07) |
+| DQ-08 | Bookings with adults + children + babies = 0. **Confirmed: 180** [verified: data profile 2026-11-16, planner]. | Flag `IsZeroGuest`. Do not delete. Measures that use guests exclude them. | IsZeroGuest = 180 (computed after DQ-07). Owner records in Desktop whether the 180 count treats the 4 "NA" children rows as 0, that is, whether any of those 4 rows is in the 180. |
 | DQ-09 | Bookings with 0 total nights (day use). **Confirmed: 715** [verified: data profile 2026-11-16, planner]. | Flag `IsZeroNight`. Revenue for these rows is 0 by construction (adr * 0). Note this in MEASURES.md. | IsZeroNight = 715 |
-| DQ-10 | "Undefined" values in meal, market_segment, distribution_channel | Keep them as their own dimension member, labelled "Undefined". Check whether the paper says meal "Undefined" equals "SC". | counts recorded |
+| DQ-10 | "Undefined" values in meal, market_segment, distribution_channel. **Resolved for meal:** "Undefined" and "SC" both mean no meal package [verified: planner, source paper]. market_segment and distribution_channel stay [not verified]. | Meal: map "Undefined" and "SC" to one member labelled "No meal package", and keep the raw code. Others: keep "Undefined" as its own member. | counts recorded |
 | DQ-11 | Country code inconsistencies (for example a 2-letter code next to the 3-letter ISO codes) | List all codes whose length is not 3. Owner decides whether to map them. | list recorded |
 | DQ-12 | Exact duplicate rows | Count them with Table.Distinct in a practice query (load disabled). Do not remove them, because there is no booking ID. | count recorded |
 | DQ-13 | arrival_date_month is a month name, not a number | Map it with `List.PositionOf({"January",...,"December"}, [arrival_date_month]) + 1`, which works the same in any culture. | no -1 / 0 results |
@@ -126,8 +134,8 @@ CC remembers these from public discussions of this dataset. Each one is a check,
 | ArrivalDate | `#date([arrival_date_year], MonthNumber, [arrival_date_day_of_month])` | [inferred] |
 | TotalNights | weekend nights + week nights | [inferred] |
 | DepartureDate | `Date.AddDays([ArrivalDate], [TotalNights])` | Date.AddDays [verified: S14] |
-| BookingDate | `Date.AddDays([ArrivalDate], -[lead_time])`. Assumes lead_time is the number of days between booking and arrival. | meaning [not verified] |
-| StatusDate | reservation_status_date as date. For cancelled rows it is assumed to be the cancellation date. | meaning [not verified] |
+| BookingDate | `Date.AddDays([ArrivalDate], -[lead_time])`. lead_time is the number of days from entering the booking in the PMS to arrival. | meaning [verified: planner, source paper] |
+| StatusDate | reservation_status_date as date. This is the date the last status was set [verified: planner, source paper]. For cancelled rows it is therefore taken as the cancellation date. | cancellation-date reading [inferred] |
 | TotalGuests | adults + (children ?? 0) + babies | [inferred] |
 | IsRoomChanged | reserved_room_type <> assigned_room_type | [inferred] |
 | IsCanceled | is_canceled as Int64 (0/1) | [inferred] |

@@ -10,7 +10,7 @@ All measures live in the `_Measures` table.
 - Boolean filters inside CALCULATE reference columns of one table only, and never a measure [verified: S25].
 - "Realized" means not cancelled (IsCanceled = 0). IsCanceled = 1 also covers no-shows: confirmed, see DATA-QUALITY V-01.
 - Revenue is an **estimate**: AdrClean x TotalNights for bookings that were not cancelled. The definition of adr in the source paper must be checked [not verified].
-- Partial years: arrivals cover 2015-2017 [verified: planner brief], and the first and last years are probably incomplete [not verified]. Year-level comparisons across partial years are misleading. Show YoY at month level and let PY return BLANK where the prior month has no data.
+- Partial years: arrivals cover 2015-2017 [verified: planner brief], and the first and last years are partial: 2015 is July to December and 2017 is January to August [verified: data profile 2026-11-16, planner; see DATA-QUALITY V-06]. Year-level comparisons across partial years are misleading. Show YoY at month level and let PY return BLANK where the prior month has no data.
 
 ## How to get these into the model
 
@@ -23,7 +23,7 @@ After the project is saved as PBIP, CC may instead edit `_Measures.tmdl` directl
 | ID | Name | Business question | Formula | Edge cases |
 |---|---|---|---|---|
 | M01 | Bookings | How many bookings were made? | `COUNTROWS ( FactBooking )` | Includes cancelled and no-show bookings. Expected total 119,390. |
-| M02 | Canceled Bookings | How many were cancelled? | `CALCULATE ( [Bookings], FactBooking[IsCanceled] = 1 )` | Includes no-shows if DQ-15 confirms is_canceled covers them. |
+| M02 | Canceled Bookings | How many were cancelled? | `CALCULATE ( [Bookings], FactBooking[IsCanceled] = 1 )` | Includes no-shows: confirmed (DQ-15, V-01). Expected 44,224 = 43,017 Canceled + 1,207 No-Show [verified: data profile 2026-11-16, planner]. |
 | M03 | Cancellation Rate | What share of bookings was cancelled? | `DIVIDE ( [Canceled Bookings], [Bookings] )` | Expected about 37.0% overall [verified: planner brief]. BLANK when there are no bookings. |
 | M04 | No-Show Bookings | How many guests did not show up? | `CALCULATE ( [Bookings], FactBooking[ReservationStatus] = "No-Show" )` | Status label spelling to verify. |
 | M05 | Realized Bookings | How many bookings turned into stays? | `CALCULATE ( [Bookings], FactBooking[IsCanceled] = 0 )` | |

@@ -147,10 +147,11 @@ Status: planning document. Nothing here has been tested in Power BI Desktop.
 | S43 | Get Power BI Desktop | https://learn.microsoft.com/en-us/power-bi/fundamentals/desktop-get-the-desktop | 2026-10-13 |
 | S44 | Sensitivity labels overview | https://learn.microsoft.com/en-us/power-bi/enterprise/service-security-sensitivity-label-overview | 2026-09-29 |
 | S45 | Enable sensitivity labels | https://learn.microsoft.com/en-us/power-bi/enterprise/service-security-enable-data-sensitivity-labels | 2026-02-17 |
-| S46 | Features for free users | https://learn.microsoft.com/en-us/power-bi/fundamentals/end-user-features | 2026-09-24 |
+| S46 | Power BI features available to free users (re-read 2026-11-16 for Free + My workspace) | https://learn.microsoft.com/en-us/power-bi/fundamentals/end-user-features | 2026-09-24 |
 | S47 | Copilot in Power BI | https://learn.microsoft.com/en-us/power-bi/create-reports/copilot-introduction | 2026-08-31 |
 | S48 | On-premises data gateway | https://learn.microsoft.com/en-us/power-bi/connect-data/service-gateway-onprem | 2026-09-24 |
 | S49 | Scheduled refresh | https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-scheduled-refresh | 2026-05-06 |
+| S54 | Licenses and subscriptions for business users (added 2026-11-16) | https://learn.microsoft.com/en-us/power-bi/consumer/end-user-license | 2026-07-23 (ms.date 2025-11-25) |
 
 - What they say:
   - RLS in Desktop: Modeling > Manage roles, with a default editor and a DAX editor. Dynamic rules need the DAX editor (S33). Test with View as (S34).
@@ -180,6 +181,30 @@ Status: planning document. Nothing here has been tested in Power BI Desktop.
   - Licence details for data alerts as a separate feature, deployment pipelines and gateway.
   - Whether a CSV in OneDrive or SharePoint avoids the gateway.
   - The URL https://learn.microsoft.com/en-us/power-query/privacy-firewall returned HTTP 404. S37 was used instead.
+
+#### Free licence in My workspace (S46 re-read, S54 added, 2026-11-16)
+
+The planner asked for "Power BI features available to free users" and "Licenses and subscriptions for business users" as new S-IDs (FROM-PLANNER-02). The first is the same page as S46, so S46 was updated instead of adding a duplicate ID. The second is S54. CC re-read both pages on 2026-11-16.
+
+- **Allowed in My workspace for a free user:**
+  - create and edit reports for personal use,
+  - create dashboards and pin tiles,
+  - add alerts to tiles,
+  - schedule refresh (S46).
+  - Create content in My workspace: yes (S54).
+- **Not allowed for a free user:**
+  - create, edit or delete a workspace,
+  - create or reshare an app,
+  - add endorsements,
+  - share content, a semantic model, or manage permissions,
+  - publish to app workspaces (S46, S54).
+  - Workspace roles other than Viewer need Pro or PPU (S46).
+- **Subscriptions:** listed only on qualifying capacity, with the Viewer role, when an administrator enables them. Subscribing on shared capacity in My workspace is not documented as allowed (S46).
+- **Admin settings:** an administrator or tenant setting can disable some otherwise available features (S46).
+- **Still unverified:**
+  - Neither page mentions publishing from Desktop to My workspace in so many words. P0-09 tests it.
+  - Item-level access is not covered as its own topic.
+  - S54's canonical URL is /power-bi/fundamentals/end-user-license; the fetch did not redirect.
 
 ### Report features, performance and other modelling features
 
@@ -216,5 +241,15 @@ Status: planning document. Nothing here has been tested in Power BI Desktop.
 
 ## Dataset source (not a Learn page)
 
-- Citation: Antonio, N., de Almeida, A., Nunes, L. (2019). "Hotel booking demand datasets". Data in Brief. [not verified: CC wrote this from memory; the DOI and licence must be checked at the publisher's page by the owner]
-- Licence: unknown. Do not state one. See RISKS-AND-OPEN-QUESTIONS.md, R01.
+Label `[verified: planner, source paper]` means verified by the planner from the following source: Antonio, de Almeida, Nunes (2019), Data in Brief 22:41-49, doi 10.1016/j.dib.2018.11.126. The planner read the PDF at the ISCTE repository (hdl 10071/16929) on 2026-11-16 through a summarising fetch. The owner is to confirm the exact wording. CC has not read this source.
+
+- Citation: Antonio, N., de Almeida, A., Nunes, L. (2019). "Hotel booking demand datasets". Data in Brief 22:41-49. doi 10.1016/j.dib.2018.11.126 [verified: planner, source paper].
+- Article licence: CC BY 4.0 [verified: planner, source paper]. The data are supplied with the paper [verified: planner, source paper]. The licence of the data files is the same as the article's [inferred]. See R01.
+- Content (all [verified: planner, source paper]):
+  - Two datasets: H1 Resort Hotel 40,060 rows and H2 City Hotel 79,330 rows, 31 variables each.
+  - Arrivals from 1 July 2015 to 31 August 2017.
+  - Agent and Company "NULL" means "not applicable", not missing.
+  - Meal "Undefined" and "SC" both mean no meal package.
+  - lead_time is the number of days between entering the booking in the PMS and arrival.
+  - reservation_status_date is the date the last status was set.
+- The owner's file is the merged TidyTuesday copy, not the original files (R14).

@@ -44,13 +44,14 @@ Status: proposal. Not built and not tested. Source IDs (Sxx) refer to docs/LEARN
 | BookingKey | Int64 | index | hidden; for distinct counts and drillthrough |
 | HotelKey | Int64 | merged from Hotel (1 = City Hotel, 2 = Resort Hotel) | hidden FK |
 | ArrivalDate | Date | built from year / month name / day | FK to 'Date' (active) |
-| BookingDate | Date | ArrivalDate - lead_time | FK to 'Booking Date' (active) |
-| StatusDate | Date | reservation_status_date | FK to 'Date' (inactive) |
+| BookingDate | Date | ArrivalDate - lead_time. lead_time is the number of days from entering the booking in the PMS to arrival [verified: planner, source paper]. | FK to 'Booking Date' (active) |
+| StatusDate | Date | reservation_status_date, the date the last status was set [verified: planner, source paper]. For cancelled rows this is the cancellation date [inferred]. | FK to 'Date' (inactive) |
 | DepartureDate | Date | ArrivalDate + TotalNights | attribute only, no relationship |
 | CountryCode | Text | country, empty -> "UNK" | FK |
 | MarketSegmentCode, DistributionChannelCode, CustomerTypeCode, DepositTypeCode, MealCode, ReservedRoomTypeCode | Text | trimmed source codes | FKs |
 | AssignedRoomTypeCode | Text | source | degenerate attribute (see role-playing below) |
-| AgentId, CompanyId | Int64 (nullable) | "NULL" -> null | degenerate; summarizeBy None |
+| AgentId, CompanyId | Int64 (nullable) | "NULL" -> null. "NULL" means "not applicable" [verified: planner, source paper]. | degenerate; summarizeBy None |
+| AgentLabel, CompanyLabel | Text | "Not applicable" when the ID is null, otherwise the ID as text | degenerate; used on axes and slicers |
 | HasAgent, HasCompany | Logical | derived | |
 | ReservationStatus | Text | source | degenerate (3 values [not verified]) |
 | IsCanceled, IsRepeatedGuest | Int64 0/1 | source | |
@@ -90,7 +91,7 @@ Status: proposal. Not built and not tested. Source IDs (Sxx) refer to docs/LEARN
 | DistributionChannel | DistributionChannelCode | label |
 | CustomerType | CustomerTypeCode | label |
 | DepositType | DepositTypeCode | label |
-| Meal | MealCode | MealDescription, merged from a small JSON lookup (objectives 1.3.5 and 1.3.8). The descriptions must come from the dataset paper [not verified]. |
+| Meal | MealCode | MealDescription, merged from a small JSON lookup (objectives 1.3.5 and 1.3.8). The descriptions come from the dataset paper. "Undefined" and "SC" both mean no meal package [verified: planner, source paper]. The other code descriptions are still to be copied from the paper by the owner [not verified]. |
 | RoomType | RoomTypeCode | label. The codes are anonymised letters [not verified]. |
 
 - These dimensions are built as **reference** queries of the staging query (Table.Distinct on the code column). Duplicate queries are not used: a reference re-uses the staging logic, so a fix in staging flows through to all of them. This covers objective 1.3.7 [inferred; reference vs duplicate behaviour not read on Learn].
@@ -151,7 +152,7 @@ Three date roles exist: arrival, booking (arrival minus lead time) and status (c
 | Auto date/time | It cannot let one date table filter several tables [verified: S18]. Turned off for the file (P2-02). |
 | Calendar-based time intelligence | Preview feature [verified: S32]. The portfolio should use GA features. Revisit if it becomes GA. |
 | Junk dimension for meal / deposit / customer type / repeated guest | A valid pattern [verified: S21]. Rejected so that each attribute is easy to find in the field list. With small dimensions at this size the cost is negligible [inferred]. |
-| Agent and Company dimensions | The IDs are anonymised and have no attributes [not verified]. A dimension would add nothing. They stay as degenerate columns in the fact table [verified: S21 describes degenerate dimensions]. |
+| Agent and Company dimensions | The IDs have no attributes in the file [not verified: the paper's description of the IDs was not reported]. "NULL" means not applicable [verified: planner, source paper]. A dimension would add nothing. They stay as degenerate columns in the fact table [verified: S21 describes degenerate dimensions]. |
 | Assigned room type as a second role on RoomType (inactive) | Low value. The useful analysis is "room changed or not", which is a flag. |
 | Integer surrogate keys on every dimension | No real benefit at about 120k rows [inferred]. Adds a merge per dimension. Used only on Hotel, as the demonstration. |
 | A stay-night fact (one row per occupied night) for occupancy | The hotels' room capacity is not in the dataset [not verified], so occupancy % cannot be computed. Possible later extension. |
